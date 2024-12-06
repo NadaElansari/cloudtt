@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import "../ApplyForm.css";
 
 const ApplyForm = () => {
@@ -73,29 +73,39 @@ const ApplyForm = () => {
     setIsLoading(true);
 
     try {
-        const response = await fetch("http://localhost:3002/predict", {
+      // Appel à l'API Flask pour la prédiction
+      const predictionResponse = await fetch("http://localhost:3002/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (predictionResponse.ok) {
+        const predictionResult = await predictionResponse.json();
+        setPrediction(predictionResult.prediction);
+
+        // Appel à l'API Cosmos DB pour stocker les données
+        const cosmosResponse = await fetch("http://localhost:3001/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ ...formData, prediction: predictionResult.prediction }),
         });
-      
-        if (response.ok) {
-          const result = await response.json();
-          if (result.status === 'success') {
-            setSuccessMessage("Formulaire soumis avec succès !");
-            setPrediction(result.prediction);
-          } else {
-            setErrorMessage("Erreur : " + (result.error || "Erreur inconnue."));
-          }
+
+        if (cosmosResponse.ok) {
+          setSuccessMessage("Formulaire soumis avec succès et enregistré dans Cosmos DB !");
         } else {
-          const errorData = await response.json().catch(() => null);
-          setErrorMessage("Erreur lors de la soumission : " + (errorData?.error || "Erreur inconnue."));
+          const errorData = await cosmosResponse.json();
+          setErrorMessage("Erreur Cosmos DB : " + (errorData?.message || "Erreur inconnue."));
         }
-      } catch (error) {
-        setErrorMessage("Erreur lors de la communication avec le serveur : " + error.message);
-      } finally {
-        setIsLoading(false);
-      }      
+      } else {
+        const errorData = await predictionResponse.json();
+        setErrorMessage("Erreur prédiction : " + (errorData?.message || "Erreur inconnue."));
+      }
+    } catch (error) {
+      setErrorMessage("Erreur : " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
