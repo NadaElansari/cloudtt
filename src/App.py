@@ -7,6 +7,11 @@ import numpy as np
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 # Chemins vers les fichiers
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "Model/")
