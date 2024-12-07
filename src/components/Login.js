@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase'; // Assurez-vous que 'db' est bien configuré pour Firestore
 import '../App.css';
 
 const Login = () => {
@@ -10,11 +11,31 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert('Connexion réussie !');
-      window.location.href = '/acceuil'; // Redirection vers /acceuil
+      // Authentification avec Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Récupération des informations depuis Firestore
+      const userDocRef = doc(db, 'users', user.uid); // Assurez-vous que Firestore est correctement configuré
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+
+        // Vérifiez le rôle de l'utilisateur
+        if (userData.role === 'admin') {
+          alert('Bienvenue Admin !');
+          window.location.href = '/admin'; // Redirection vers admin.js
+        } else {
+          alert('Connexion réussie !');
+          window.location.href = '/acceuil'; // Redirection vers /acceuil
+        }
+      } else {
+        alert(user.uid);
+      }
     } catch (error) {
-      alert(error.message);
+      console.error('Erreur lors de la connexion :', error);
+      alert('Erreur : ' + error.message);
     }
   };
 
