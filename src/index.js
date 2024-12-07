@@ -10,6 +10,7 @@ import ApplyForm from "./components/ApplyForm";
 import model from "./Model/model.pkl";
 import encoder from "./Model/encoder.pkl";
 import scaler from "./Model/scaler.pkl";
+import Admin from './components/Admin';
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -27,6 +28,7 @@ root.render(
         <Route path="/model" element={<model.pkl />} />
         <Route path="/encoder" element={<encoder.pkl />} />
         <Route path="/scaler" element={<scaler.pkl />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   </React.StrictMode>
