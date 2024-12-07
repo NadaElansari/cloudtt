@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import "../ApplyForm.css";
+import "../Admin.css"; 
 
 const ApplyForm = () => {
   const { clubId } = useParams();
@@ -203,38 +204,49 @@ const ApplyForm = () => {
         </label>
         <br />
         <label>
-          Compétences Techniques:
-          <select
-            name="Compétences Techniques"
-            value={formData["Compétences Techniques"]}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionnez</option>
-            {competencesTechOptions.map((tech, index) => (
-              <option key={index} value={tech}>
-                {tech}
-              </option>
-            ))}
-          </select>
-        </label>
-        <br />
-        <label>
-          Compétences Personnelles:
-          <select
-            name="Compétences Personnelles"
-            value={formData["Compétences Personnelles"]}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionnez</option>
-            {competencesPersoOptions.map((perso, index) => (
-              <option key={index} value={perso}>
-                {perso}
-              </option>
-            ))}
-          </select>
-        </label>
+  Compétences Techniques:
+  <div className="checkbox-container">
+    {competencesTechOptions.map((tech, index) => (
+      <div key={index}>
+        <input
+          type="checkbox"
+          value={tech}
+          checked={formData["Compétences Techniques"].includes(tech)}
+          onChange={(e) => {
+            const newTechs = e.target.checked
+              ? [...formData["Compétences Techniques"], tech]
+              : formData["Compétences Techniques"].filter((t) => t !== tech);
+            setFormData({ ...formData, "Compétences Techniques": newTechs });
+          }}
+        />
+        {tech}
+      </div>
+    ))}
+  </div>
+</label>
+
+<label>
+  Compétences Personnelles:
+  <div className="checkbox-container">
+    {competencesPersoOptions.map((perso, index) => (
+      <div key={index}>
+        <input
+          type="checkbox"
+          value={perso}
+          checked={formData["Compétences Personnelles"].includes(perso)}
+          onChange={(e) => {
+            const newPersos = e.target.checked
+              ? [...formData["Compétences Personnelles"], perso]
+              : formData["Compétences Personnelles"].filter((p) => p !== perso);
+            setFormData({ ...formData, "Compétences Personnelles": newPersos });
+          }}
+        />
+        {perso}
+      </div>
+    ))}
+  </div>
+</label>
+
         <br />
         <label>
           Poste:
