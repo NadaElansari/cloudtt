@@ -1,6 +1,6 @@
-// Import Firebase modules
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // Import getAuth from firebase/auth
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -13,8 +13,8 @@ const firebaseConfig = {
   measurementId: "G-MHGJV266TJ"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Initialize Firebase Authentication
-export const auth = getAuth(app); // Fix: Export the auth instance
+export { auth, db };
